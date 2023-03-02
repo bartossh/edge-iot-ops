@@ -1,4 +1,5 @@
 SHELL = /bin/bash
+MYEKUIPER=my-ekuiper
 
 .PHONY: deployment-up
 deployment-up: TAG := $(shell date +"%Y-%m-%d-%I-%M-%S")
@@ -11,10 +12,10 @@ deployment-up:
 
 	KUBECONFIG=./kubeconfig.yaml helm repo add emqx https://repos.emqx.io/charts
 	KUBECONFIG=./kubeconfig.yaml helm repo update
-	KUBECONFIG=./kubeconfig.yaml helm install my-ekuiper emqx/kuiper
+	KUBECONFIG=./kubeconfig.yaml helm install $(MYEKUIPER) emqx/kuiper
 	@echo
 	@echo "Waiting for deployment done."
-	until kubectl --kubeconfig=./kubeconfig.yaml get pods; do sleep 1; done
+	until kubectl --kubeconfig=./kubeconfig.yaml get pods $(MYEKUIPER)-0 --no-headers -o custom-columns=":status.phase"; do sleep 2; done
 
 
 
